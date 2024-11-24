@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 
-export const DrawingPad = () => {
+export const DrawingPad = ({ postImage }) => {
 
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -54,10 +54,7 @@ export const DrawingPad = () => {
   const download = () => {
     let canvas1 = canvasRef.current;
     let url = canvas1.toDataURL("image/png");
-    let link = document.createElement('a');
-    link.download = 'filename.png';
-    link.href = url;
-    link.click();
+    postImage(url)
   }
 
   return (

@@ -3,6 +3,8 @@ import numpy as np
 import network
 import pickle
 from PIL import Image
+import base64
+from io import BytesIO
 import matplotlib.pyplot as plt
 import json
 
@@ -35,11 +37,16 @@ nn = load_network('trained_network.pkl')
 
 @app.route("/predict", methods=["POST"])
 def predict_route():
-    #Get the flattened array data from front end
+    #Get the base64 data from frontend, convert it
     #Evaluate digit and return prediction
     data = request.get_json()
-    image_data = preprocess_image(np.array(data['image']))
-    prediction = nn.evaluate(image_data)
+    if data["image"].startswith("data:image/png;base64,"):
+        base64_string = base64_string.replace("data:image/png;base64,", "")
+    image = base64.base64decode(base64_string)
+    image = Image.open(BytesIO(image_data))
+
+    image_data = preprocess_image(image)
+    prediction = nn.feedforward(image_data)
 
     return jsonify({"prediction": prediction})
 

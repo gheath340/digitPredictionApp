@@ -15,16 +15,16 @@ export const HomePage = () => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              imageInfo
+              image: imageInfo
             }),
-          }).then((res) => res.json());
-      
-          setPrediction([data]);
+          }).then((res) => res.json())
+            .then(data => setPrediction(data.prediction))
+            .catch(error => console.error('Error: ', error))
     }
   
     return (
         <div className="">
-            <DrawingPad />
+            <DrawingPad postImage={postImage}/>
             <PredictionResult />
         </div>
     );
