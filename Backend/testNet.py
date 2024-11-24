@@ -30,7 +30,6 @@ def preprocess_image(image_path):
 
 nn = load_network('trained_network.pkl')
 
-input_data = [(preprocess_image("eight.png"), 8)]
-print(input_data)
-prediction = nn.evaluate(input_data)
+input_data = preprocess_image("eight.png")
+prediction = nn.prodEvaluate(input_data)
 print(f"Prediction: {prediction}")

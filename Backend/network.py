@@ -138,6 +138,12 @@ class Network(object):
         plt.axis('off')
         plt.show()
 
+    def prodEvaluate(self, test_data):
+        test_results = (np.argmax(self.feedForward(test_data)))
+                        
+        print("Evaluate test results: ", test_results)
+        return test_results
+
 def sigmoid(z):
     """The sigmoid function."""
     return 1.0/(1.0+np.exp(-z))
