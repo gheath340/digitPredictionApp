@@ -4,6 +4,166 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 
+import numpy as np
+import random
+import time
+import pickle
+import matplotlib.pyplot as plt
+
+# Adam Optimizer class
+# class AdamOptimizer:
+#     def __init__(self, lr=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8):
+#         self.lr = lr
+#         self.beta1 = beta1
+#         self.beta2 = beta2
+#         self.epsilon = epsilon
+#         self.m = None  # First moment
+#         self.v = None  # Second moment
+#         self.t = 0  # Time step
+
+#     def update(self, params, grads):
+#         if self.m is None:
+#             self.m = [np.zeros_like(param) for param in params]  # Initialize m
+#         if self.v is None:
+#             self.v = [np.zeros_like(param) for param in params]  # Initialize v
+
+#         self.t += 1  # Increment the timestep
+#         updated_params = []
+
+#         for i in range(len(params)):
+#             grad = grads[i]
+#             m_t = self.beta1 * self.m[i] + (1 - self.beta1) * grad  # First moment estimate
+#             v_t = self.beta2 * self.v[i] + (1 - self.beta2) * (grad ** 2)  # Second moment estimate
+
+#             # Bias correction
+#             m_hat = m_t / (1 - self.beta1 ** self.t)
+#             v_hat = v_t / (1 - self.beta2 ** self.t)
+
+#             # Update parameters
+#             param_update = self.lr * m_hat / (np.sqrt(v_hat) + self.epsilon)
+#             updated_param = params[i] - param_update
+#             updated_params.append(updated_param)
+
+#             # Update m and v for next iteration
+#             self.m[i] = m_t
+#             self.v[i] = v_t
+
+#         return updated_params
+
+
+# class Network(object):
+#     def __init__(self, sizes):
+#         self.num_layers = len(sizes)
+#         self.sizes = sizes
+#         self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+#         self.weights = [np.random.randn(y, x) for x, y in zip(sizes[:-1], sizes[1:])]
+        
+#         # Initialize Adam optimizer
+#         self.adam_optimizer = AdamOptimizer()
+
+#     def feedForward(self, a):
+#         """Feed the input through the network and return the output."""
+#         for b, w in zip(self.biases, self.weights):
+#             print(f"Before feedforward: a.shape = {a.shape}, w.shape = {w.shape}, b.shape = {b.shape}")
+#             a = sigmoid(np.dot(w, a) + b)  # Ensure a is (n, 1)
+#             print(f"After feedforward: a.shape = {a.shape}")
+#         return a
+
+#     def SGD(self, training_data, epochs, mini_batch_size, eta, test_data=None):
+#         if test_data:
+#             n_test = len(test_data)
+#         n = len(training_data)
+#         for j in range(epochs):
+#             time1 = time.time()
+#             random.shuffle(training_data)
+#             mini_batches = [
+#                 training_data[k:k + mini_batch_size]
+#                 for k in range(0, n, mini_batch_size)
+#             ]
+#             for mini_batch in mini_batches:
+#                 self.update_mini_batch(mini_batch, eta)
+#             time2 = time.time()
+#             if test_data:
+#                 print(f"Epoch {j}: {self.evaluate(test_data)} / {n_test}, took {time2 - time1:.2f} seconds")
+#             else:
+#                 print(f"Epoch {j} complete in {time2 - time1:.2f} seconds")
+#             self.print_random_test_digit(test_data)
+
+#     def update_mini_batch(self, mini_batch, eta):
+#         """Update the network's weights and biases by applying Adam optimizer to a mini-batch."""
+#         nabla_b = [np.zeros(b.shape) for b in self.biases]
+#         nabla_w = [np.zeros(w.shape) for w in self.weights]
+#         for x, y in mini_batch:
+#             # Ensure x is reshaped as (784, 1)
+#             x = x.reshape(-1, 1)
+#             delta_nabla_b, delta_nabla_w = self.backprop(x, y)
+#             nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
+#             nabla_w = [nw + dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
+        
+#         # Update weights and biases using Adam optimizer
+#         self.weights = self.adam_optimizer.update(self.weights, nabla_w)
+#         self.biases = self.adam_optimizer.update(self.biases, nabla_b)
+
+#     def backprop(self, x, y):
+#         nabla_b = [np.zeros(b.shape) for b in self.biases]
+#         nabla_w = [np.zeros(w.shape) for w in self.weights]
+        
+#         # Reshape input x to ensure it is in the correct shape (784, 1) for MNIST
+#         activation = x  # (784, 1) shape
+#         activations = [activation]  # list to store all the activations, layer by layer
+#         zs = []  # list to store all the z vectors, layer by layer
+#         print(f"Starting backprop: activation.shape = {activation.shape}")
+#         for b, w in zip(self.biases, self.weights):
+#             z = np.dot(w, activation) + b
+#             zs.append(z)
+#             activation = sigmoid(z)
+#             activations.append(activation)
+#             print(f"After layer: activation.shape = {activation.shape}, z.shape = {z.shape}")
+        
+#         # backward pass
+#         delta = self.cost_derivative(activations[-1], y) * sigmoid_prime(zs[-1])
+#         nabla_b[-1] = delta
+#         nabla_w[-1] = np.dot(delta, activations[-2].transpose())
+        
+#         # Backpropagation for the other layers
+#         for l in range(2, self.num_layers):
+#             z = zs[-l]
+#             sp = sigmoid_prime(z)
+#             delta = np.dot(self.weights[-l+1].transpose(), delta) * sp
+#             nabla_b[-l] = delta
+#             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
+        
+#         return nabla_b, nabla_w
+
+#     def evaluate(self, test_data):
+#         test_results = [(np.argmax(self.feedForward(x)), y) for x, y in test_data]
+#         return sum(int(x == y) for x, y in test_results)
+
+#     def cost_derivative(self, output_activations, y):
+#         return output_activations - y
+    
+#     def print_random_test_digit(self, test_data):
+#         random_index = random.randint(0, len(test_data) - 1)
+#         x, y = test_data[random_index]
+#         img = x.reshape(28, 28)
+#         plt.imshow(img, cmap='gray')
+#         plt.title(f"Label: {y}")
+#         plt.axis('off')
+#         plt.show()
+
+# def sigmoid(z):
+#     return 1.0 / (1.0 + np.exp(-z))
+
+# def sigmoid_prime(z):
+#     return sigmoid(z) * (1 - sigmoid(z))
+
+# def save_network(network, filename):
+#     with open(filename, 'wb') as f:
+#         pickle.dump((network.biases, network.weights), f)
+
+
+
+
 
 class Network(object):
 
@@ -56,7 +216,7 @@ class Network(object):
                     j, self.evaluate(test_data), n_test, time2-time1))
             else:
                 print("Epoch {0} complete in {1:.2f} seconds".format(j, time2-time1))
-            self.print_random_test_digit(test_data)
+            #self.print_random_test_digit(test_data)
 
     def update_mini_batch(self, mini_batch, eta):
         """Update the network's weights and biases by applying
@@ -116,7 +276,7 @@ class Network(object):
         neuron in the final layer has the highest activation."""
         test_results = [(np.argmax(self.feedForward(x)), y)
                         for (x, y) in test_data]
-        print("Evaluate test results: ", test_results)
+        #print("Evaluate test results: ", test_results)
         return sum(int(x == y) for (x, y) in test_results)
     
     def prodEvaluate(self, test_data):
@@ -125,8 +285,7 @@ class Network(object):
         return test_results
 
     def cost_derivative(self, output_activations, y):
-        """Return the vector of partial derivatives \partial C_x /
-        \partial a for the output activations."""
+        """Return the vector of partial derivatives for the output activations."""
         return (output_activations-y)
     
     def print_random_test_digit(self, test_data):
