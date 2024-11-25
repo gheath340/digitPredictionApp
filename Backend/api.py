@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import json
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 def load_network(filename):
     #Open the trained network and retrieve weights and biases
@@ -22,26 +22,44 @@ def load_network(filename):
     nn.weights = weights
     return nn
 
+def brighten_image(pixel):
+    #brighten everything that isnt black
+    if pixel == 0:
+        return pixel
+    else:
+        return 255
+
 def preprocess_image(image):
-    #Convert to grayscale, resize image, reshape array, normalize to [0,1]
+    #Convert to grayscale and invert
     img = Image.open(BytesIO(image))
     img = img.convert('L')
-    #img.show()
     img = ImageOps.invert(img)
-    #img.show()
+    #resize
     img = img.resize((28, 28))
-    img.show()
-    img_array = np.array(img).reshape(784, 1)
+    #turn into array and brighten everything that isnt black
+    img_array = np.array(img)
+    vectorized_brighten = np.vectorize(brighten_image)
+    img_array = vectorized_brighten(img_array)
+    brighter_image = Image.fromarray(np.uint8(img_array))
+    #reshape and normalize pixel values between 0 and 1
+    img_array = img_array.reshape(784, 1)
     img_array = img_array / 255.0
 
     return img_array
 
 nn = load_network('trained_network.pkl')
 
-@app.route("/predict", methods=["POST"])
+
+@app.route('/predict', methods=['OPTIONS', 'POST'])
 def predict_route():
-    #Get the base64 data from frontend, convert it
-    #Evaluate digit and return prediction
+    #handle preflight request
+    if request.method == 'OPTIONS':
+        response = jsonify({"message": "CORS preflight successful"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type")
+        return response, 204
+    #get base64 string, remove start, decode base64, preprocess and predict
     data = request.get_json()
     base64_string = data["image"]
     if data["image"].startswith("data:image/png;base64,"):
@@ -54,4 +72,4 @@ def predict_route():
     return jsonify({"prediction": prediction})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5001, debug=False)

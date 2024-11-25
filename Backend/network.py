@@ -56,7 +56,7 @@ class Network(object):
                     j, self.evaluate(test_data), n_test, time2-time1))
             else:
                 print("Epoch {0} complete in {1:.2f} seconds".format(j, time2-time1))
-            #self.print_random_test_digit(test_data)
+            self.print_random_test_digit(test_data)
 
     def update_mini_batch(self, mini_batch, eta):
         """Update the network's weights and biases by applying
