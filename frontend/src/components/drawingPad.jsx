@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
-export const DrawingPad = ({ postImage }) => {
+export const DrawingPad = ({ postImage, clear }) => {
 
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -8,6 +8,14 @@ export const DrawingPad = ({ postImage }) => {
   // Set the canvas size
   const canvasWidth = 280;
   const canvasHeight = 280;
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    // Set the canvas background to white
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }, []);
 
    // Get mouse position on canvas
     const getMousePos = (e) => {
@@ -44,17 +52,22 @@ export const DrawingPad = ({ postImage }) => {
     setIsDrawing(false);
   };
 
-  // Clear the canvas
   const clearCanvas = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-  };
+    clear(canvasRef)
+  }
+
   // Captures the data inside the canvas, sends it to server to be predicted
   const download = () => {
-    let canvas1 = canvasRef.current;
-    let url = canvas1.toDataURL("image/png");
-    postImage(url)
+    setTimeout(() => {
+        let canvas1 = canvasRef.current;
+        let url = canvas1.toDataURL("image/png");
+
+        // let ctx = canvas1.getContext("2d");
+        // ctx.fillStyle = "white";
+        // ctx.fillRect(0, 0, canvas1.width, canvas1.height);
+
+        postImage(url)
+    }, 100)
   }
 
   return (
@@ -76,8 +89,8 @@ export const DrawingPad = ({ postImage }) => {
                 touchAction: 'none',
             }}
         />
-        <button onClick={clearCanvas}>Clear</button>
-        <button onclick={download}>Capture</button>
+        <button className="border border-1 border-black transition-transform transform hover:scale-110 active:scale-95 rounded-lg focus:outline-none" onClick={clearCanvas}>Clear</button>
+        <button className="border border-1 border-black transition-transform transform hover:scale-110 active:scale-95 rounded-lg focus:outline-none" onClick={download}>Capture</button>
     </div>
   );
 };

@@ -3,7 +3,7 @@ from flask_cors import CORS
 import numpy as np
 import network
 import pickle
-from PIL import Image
+from PIL import Image, ImageOps
 import base64
 from io import BytesIO
 import matplotlib.pyplot as plt
@@ -24,15 +24,16 @@ def load_network(filename):
 
 def preprocess_image(image):
     #Convert to grayscale, resize image, reshape array, normalize to [0,1]
-    img = Image.open(BytesIO(image)).convert('L')
+    img = Image.open(BytesIO(image))
+    img = img.convert('L')
+    #img.show()
+    img = ImageOps.invert(img)
+    #img.show()
     img = img.resize((28, 28))
+    #img.show()
     img_array = np.array(img).reshape(784, 1)
     img_array = img_array / 255.0
 
-    # plt.imshow(img, cmap='gray')
-    # plt.title("Preprocessed Image")
-    # plt.axis('off')
-    # plt.show()
     return img_array
 
 nn = load_network('trained_network.pkl')
@@ -46,7 +47,6 @@ def predict_route():
     if data["image"].startswith("data:image/png;base64,"):
         base64_string = base64_string.replace("data:image/png;base64,", "")
     image = base64.b64decode(base64_string)
-    #image = Image.open(BytesIO(image))
 
     image_data = preprocess_image(image)
     prediction = int(nn.prodEvaluate(image_data))

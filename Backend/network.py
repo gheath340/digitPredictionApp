@@ -118,6 +118,11 @@ class Network(object):
                         for (x, y) in test_data]
         print("Evaluate test results: ", test_results)
         return sum(int(x == y) for (x, y) in test_results)
+    
+    def prodEvaluate(self, test_data):
+        test_results = (np.argmax(self.feedForward(test_data)))
+                        
+        return test_results
 
     def cost_derivative(self, output_activations, y):
         """Return the vector of partial derivatives \partial C_x /
@@ -137,12 +142,6 @@ class Network(object):
         plt.title(f"Label: {y}")
         plt.axis('off')
         plt.show()
-
-    def prodEvaluate(self, test_data):
-        test_results = (np.argmax(self.feedForward(test_data)))
-                        
-        print("Evaluate test results: ", test_results)
-        return test_results
 
 def sigmoid(z):
     """The sigmoid function."""

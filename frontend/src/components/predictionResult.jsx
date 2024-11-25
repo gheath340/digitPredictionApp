@@ -1,9 +1,9 @@
 
-export const PredictionResult = () => {
+export const PredictionResult = ({ prediction }) => {
   
     return (
       <div className="">
-          Result: 
+          Result: {prediction}
       </div>
     );
   }
