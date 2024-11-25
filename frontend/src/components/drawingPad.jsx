@@ -31,6 +31,7 @@ export const DrawingPad = ({ postImage, clear }) => {
     const pos = e.touches ? getMousePos(e.touches[0]) : getMousePos(e);
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
+    ctx.lineWidth = 5
     ctx.beginPath();
     ctx.moveTo(pos.x, pos.y);
     setIsDrawing(true);
@@ -58,16 +59,10 @@ export const DrawingPad = ({ postImage, clear }) => {
 
   // Captures the data inside the canvas, sends it to server to be predicted
   const download = () => {
-    setTimeout(() => {
-        let canvas1 = canvasRef.current;
-        let url = canvas1.toDataURL("image/png");
+    let canvas1 = canvasRef.current;
+    let url = canvas1.toDataURL("image/png");
+    postImage(url)
 
-        // let ctx = canvas1.getContext("2d");
-        // ctx.fillStyle = "white";
-        // ctx.fillRect(0, 0, canvas1.width, canvas1.height);
-
-        postImage(url)
-    }, 100)
   }
 
   return (

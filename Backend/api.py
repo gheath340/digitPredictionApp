@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import numpy as np
 import network
 import pickle
@@ -30,7 +30,7 @@ def preprocess_image(image):
     img = ImageOps.invert(img)
     #img.show()
     img = img.resize((28, 28))
-    #img.show()
+    img.show()
     img_array = np.array(img).reshape(784, 1)
     img_array = img_array / 255.0
 

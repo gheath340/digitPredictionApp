@@ -19,18 +19,25 @@ export const HomePage = () => {
 }
 
     const postImage = async (imageInfo) => {
-        const data = await fetch(API_BASE + "/predict", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              image: imageInfo
-            }),
-          }).then((res) => res.json())
-            .then(data => setPrediction(data.prediction))
-            .catch(error => console.error('Error: ', error))
-    }
+            try {
+              const response = await fetch("http://127.0.0.1:5000/predict", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ image: imageInfo }),
+              });
+          
+              if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              }
+          
+              const data = await response.json();
+              setPrediction(data.prediction)
+            } catch (error) {
+              console.error("Error: ", error);
+            }
+        }
   
     return (
         <div className="">

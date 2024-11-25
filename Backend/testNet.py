@@ -21,6 +21,8 @@ def preprocess_image(image_path):
     img = img.resize((28, 28))
     img_array = np.array(img).reshape(784, 1)
     img_array = img_array / 255.0
+    img_array = []
+    print(img_array)
 
     plt.imshow(img, cmap='gray')
     plt.title("Preprocessed Image")
