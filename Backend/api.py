@@ -67,7 +67,7 @@ def predict_route():
     image = base64.b64decode(base64_string)
 
     image_data = preprocess_image(image)
-    prediction = int(nn.prodEvaluate(image_data))
+    prediction = int(nn.production_evaluate(image_data))
 
     return jsonify({"prediction": prediction})
 

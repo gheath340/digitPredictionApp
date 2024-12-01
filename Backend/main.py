@@ -27,7 +27,7 @@ test_data = df.normalize_test_data(test_data)
 nn = network.Network([784, 32, 16, 10])
 nn.SGD(training_data, 30, 32, 3.0, test_data=test_data)
 
-#save_network(nn, "trained_network.pkl")
+save_network(nn, "trained_network.pkl")
 
 #Loads saved network
 def load_network(filename):
