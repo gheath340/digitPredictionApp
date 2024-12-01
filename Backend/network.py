@@ -3,12 +3,8 @@ import time
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
-from PIL import Image, ImageOps
-import numpy as np
-import random
-import time
-import pickle
-import matplotlib.pyplot as plt
+
+
 
 class Network(object):
     #Sizes is number of neurons in layers of network
@@ -116,36 +112,6 @@ class Network(object):
         plt.title(f"Label: {y}")
         plt.axis('off')
         plt.show()
-
-    #Randomly rotates image between max_angle and -max_angle
-    def random_rotation(self, image, max_angle=15):
-        angle = random.uniform(-max_angle, max_angle)
-        return image.rotate(angle)
-    
-    #Randomly shifts image between max_shift angle and -max_shift angle
-    def random_shift(self, image, max_shift=0.1):
-        width, height = image.size
-        max_dx = int(max_shift * width)
-        max_dy = int(max_shift * height)
-        dx = random.randint(-max_dx, max_dx)
-        dy = random.randint(-max_dy, max_dy)
-        return ImageOps.offset(image, dx, dy)
-    
-    #Randomly zooms image between max_zoom and min_zoom
-    def random_zoom(self, image, min_zoom=0.9, max_zoom=1.1):
-        width, height = image.size
-        zoom_factor = random.uniform(min_zoom, max_zoom)
-        new_width = int(width * zoom_factor)
-        new_height = int(height * zoom_factor)
-        resized = image.resize((new_width, new_height), Image.Resampling.BICUBIC)
-        return resized.crop((0, 0, width, height))
-    
-    #Adds noise to image
-    def add_noise(self, image, noise_factor=0.1):
-        np_image = np.array(image)
-        noise = np.random.normal(0, noise_factor * 255, np_image.shape).astype(np.int32)
-        noisy_image = np.clip(np_image + noise, 0, 255).astype(np.uint8)
-        return Image.fromarray(noisy_image)
 
 #Sigmoid function
 def sigmoid(z):
